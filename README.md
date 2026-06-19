@@ -1,2 +1,49 @@
-# pikdro-hud-demo-release
-PikDro HUD demo APK distribution repository.
+# PikDro HUD Demo
+
+PikDro HUD Demo は、配達オファー画面の情報をもとに、距離単価や時間単価などの判断補助情報を表示するためのデモ版アプリです。
+
+本アプリは、配達中の判断を補助することを目的としたツールであり、配達サービス各社の公式アプリではありません。
+
+このリポジトリは、PikDro HUD Demo のAPK配布専用リポジトリです。  
+アプリ本体のソースコードは公開していません。
+
+## ダウンロード
+
+最新版のAPKは、GitHub Releases からダウンロードしてください。
+
+- Releases から最新バージョンを選択
+- `PikDro-HUD-demo-xxxx.apk` をダウンロード
+- Android端末でAPKを開いてインストール
+
+## 重要な注意事項
+
+本アプリをダウンロード、インストール、または利用した時点で、注意事項および利用条件に同意したものとみなします。
+
+利用前に必ず以下を確認してください。
+
+- [使い方](docs/USAGE.md)
+- [注意事項・利用条件](docs/TERMS.md)
+- [データ・ログ・画像の扱い](docs/PRIVACY.md)
+- [困ったとき](docs/TROUBLESHOOTING.md)
+
+## 配布ファイル
+
+GitHub Releases には、主に以下のファイルを配置します。
+
+- `PikDro-HUD-demo-xxxx.apk`
+- `update.json`
+- `SHA256SUMS.txt`
+
+APKファイルをリポジトリ直下に直接配置する予定はありません。
+
+## アップデートについて
+
+PikDro HUD Demo は、このリポジトリ上の最新版情報を確認する場合があります。
+
+最新版がある場合、アプリ内で更新案内が表示されることがあります。  
+アップデートは任意であり、ユーザーの確認後に行われます。
+
+## ソースコードについて
+
+このリポジトリでは、PikDro HUD のソースコードは公開していません。  
+公開しているのは、デモ版APKおよびアップデート確認用ファイルのみです。
