@@ -1,29 +1,61 @@
-# deployment trigger via pull request
-# deployment retry 2026-07-22
 name: Materialize PikDro Pages
+
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - .github/workflows/materialize-pages.yml
+      - .pages-src/**
+
 permissions:
   contents: write
+
+concurrency:
+  group: pikdro-pages-materialize
+  cancel-in-progress: false
+
 jobs:
   materialize:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Build static site files
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Validate and build static site files
         shell: bash
         run: |
-          cat .pages-src/index.xz.b64.part* | base64 -d | xz -d > index.html
+          set -euo pipefail
+
+          echo "Payload parts:"
+          find .pages-src -maxdepth 1 -type f -name 'index.xz.b64.part*' -print | sort
+
+          part_count="$(find .pages-src -maxdepth 1 -type f -name 'index.xz.b64.part*' | wc -l | tr -d ' ')"
+          if [ "$part_count" -lt 1 ]; then
+            echo "No payload parts found." >&2
+            exit 1
+          fi
+
+          cat .pages-src/index.xz.b64.part* \
+            | tr -d '\r\n\t ' \
+            | base64 --decode > /tmp/pikdro-index.xz
+
+          xz --test /tmp/pikdro-index.xz
+          xz --decompress --stdout /tmp/pikdro-index.xz > index.html
+
+          test -s index.html
+          grep -qi '<!doctype html' index.html
+          grep -q 'PikDro HUD' index.html
+
           cat > robots.txt <<'EOF'
           User-agent: *
           Allow: /
 
           Sitemap: https://shogot62.github.io/pikdro-hud-demo-release/sitemap.xml
           EOF
+
           cat > sitemap.xml <<'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -33,15 +65,59 @@ jobs:
             </url>
           </urlset>
           EOF
-          echo 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMzOGJkZjgiLz48cGF0aCBkPSJNMTggMTRoMjFjMTMgMCAyMCA4IDIwIDE4IDAgMTItOCAyMC0yMSAyMGgtOHYxMkgxOHptMTIgMTB2MThoOGM3IDAgMTAtMyAxMC05IDAtNi00LTktMTAtOXoiIGZpbGw9IiMwMzEwMTkiIHRyYW5zZm9ybT0ic2NhbGUoLjc4KSB0cmFuc2xhdGUoNyAyKSIvPjwvc3ZnPg==' | base64 -d > favicon.svg
-          echo 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjYzMCIgdmlld0JveD0iMCAwIDEyMDAgNjMwIiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idCBkIj48dGl0bGUgaWQ9InQiPlBpa0RybyBIVUQ8L3RpdGxlPjxkZXNjIGlkPSJkIj7phY3pgZTjgqrjg5XjgqHjg7zjga7ljZjkvqHjgpLoh6rli5XoqIjnrpfjgZnjgotBbmRyb2lk5ZCR44GR5Yik5pat5pSv5o+0SFVEPC9kZXNjPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiMwNzEwMWEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwMjA0MDciLz48L2xpbmVhckdyYWRpZW50PjxyYWRpYWxHcmFkaWVudCBpZD0iciI+PHN0b3Agc3RvcC1jb2xvcj0iIzM4YmRmOCIgc3RvcC1vcGFjaXR5PSIuMjgiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMzOGJkZjgiIHN0b3Atb3BhY2l0eT0iMCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjYzMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjkxMCIgY3k9IjE0MCIgcj0iMzkwIiBmaWxsPSJ1cmwoI3IpIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODYgODIpIj48cmVjdCB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIyNCIgZmlsbD0iIzM4YmRmOCIvPjxwYXRoIGQ9Ik0yOCAyNGgzMmMyMSAwIDMxIDEyIDMxIDI5IDAgMTktMTMgMzEtMzQgMzFINDV2MjFIMjh6bTE3IDE1djMwaDEyYzExIDAgMTctNSAxNy0xNSAwLTEwLTYtMTUtMTctMTV6IiBmaWxsPSIjMDMxMDE5IiB0cmFuc2Zvcm09InNjYWxlKC43NSkgdHJhbnNsYXRlKDEwIDMpIi8+PC9nPjx0ZXh0IHg9IjIwNiIgeT0iMTQzIiBmaWxsPSIjZjhmYWZjIiBmb250LXNpemU9IjUyIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI4MDAiPlBpa0RybyBIVUQ8L3RleHQ+PHRleHQgeD0iODgiIHk9IjI5MCIgZmlsbD0iI2Y4ZmFmYyIgZm9udC1zaXplPSI2OCIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iODAwIj7jgqrjg5XjgqHjg7zliKTmlq3jgpLjgIHjgoLjgaPjgajou73jgY/jgII8L3RleHQ+PHRleHQgeD0iOTAiIHk9IjM2NSIgZmlsbD0iI2NiZDVlMSIgZm9udC1zaXplPSIzMiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIj7jgq3jg63ljZjkvqHjg7vliIbljZjkvqHjg7vmmYLntabmj5vnrpfjgpJIVUTooajnpLo8L3RleHQ+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTAgNDQwKSI+PHJlY3Qgd2lkdGg9IjY4MCIgaGVpZ2h0PSI4NiIgcng9IjIyIiBmaWxsPSIjMGIwZjE2IiBzdHJva2U9IiMzOGJkZjgiIHN0cm9rZS1vcGFjaXR5PSIuNDUiLz48dGV4dCB4PSIzNCIgeT0iNTUiIGZpbGw9IiM2N2U4ZjkiIGZvbnQtc2l6ZT0iMjkiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjcwMCI+QW5kcm9pZCAxMeS7pemZje+9nOeEoeaWmeODmeODvOOCv+eJiDwvdGV4dD48L2c+PC9zdmc+' | base64 -d > og-image.svg
-          rm -rf .pages-src
-          rm -f .github/workflows/materialize-pages.yml
-      - name: Commit deployed site
+
+          cat > favicon.svg <<'EOF'
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+            <rect width="64" height="64" rx="16" fill="#38bdf8"/>
+            <path d="M18 14h21c13 0 20 8 20 18 0 12-8 20-25 20h-8v12H18zm12 10v18h8c7 0 10-3 10-9 0-6-4-9-10-9z" fill="#031019" transform="scale(.78) translate(7 2)"/>
+          </svg>
+          EOF
+
+          cat > og-image.svg <<'EOF'
+          <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+            <title id="title">PikDro HUD</title>
+            <desc id="desc">配達オファーの単価を自動計算するAndroid向け判断支援HUD</desc>
+            <defs>
+              <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                <stop stop-color="#07101a"/>
+                <stop offset="1" stop-color="#020407"/>
+              </linearGradient>
+              <radialGradient id="glow">
+                <stop stop-color="#38bdf8" stop-opacity=".28"/>
+                <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="1200" height="630" fill="url(#bg)"/>
+            <circle cx="910" cy="140" r="390" fill="url(#glow)"/>
+            <g transform="translate(86 82)">
+              <rect width="92" height="92" rx="24" fill="#38bdf8"/>
+              <path d="M28 24h32c21 0 31 12 31 29 0 19-13 31-34 31H45v21H28zm17 15v30h12c11 0 17-5 17-15 0-10-6-15-17-15z" fill="#031019" transform="scale(.75) translate(10 3)"/>
+            </g>
+            <text x="206" y="143" fill="#f8fafc" font-size="52" font-family="system-ui,sans-serif" font-weight="800">PikDro HUD</text>
+            <text x="88" y="290" fill="#f8fafc" font-size="68" font-family="system-ui,sans-serif" font-weight="800">オファー判断を、もっと軽く。</text>
+            <text x="90" y="365" fill="#cbd5e1" font-size="32" font-family="system-ui,sans-serif">キロ単価・分単価・時給換算をHUD表示</text>
+            <g transform="translate(90 440)">
+              <rect width="680" height="86" rx="22" fill="#0b0f16" stroke="#38bdf8" stroke-opacity=".45"/>
+              <text x="34" y="55" fill="#67e8f9" font-size="29" font-family="system-ui,sans-serif" font-weight="700">Android 11以降｜無料ベータ版</text>
+            </g>
+          </svg>
+          EOF
+
+          echo "Generated files:"
+          ls -lh index.html robots.txt sitemap.xml favicon.svg og-image.svg
+
+      - name: Commit generated site files
         shell: bash
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add index.html robots.txt sitemap.xml favicon.svg og-image.svg
+
+          if git diff --cached --quiet; then
+            echo "Generated site files are already current."
+            exit 0
+          fi
+
           git commit -m "Deploy PikDro HUD landing page"
-          git push
+          git push origin HEAD:main
