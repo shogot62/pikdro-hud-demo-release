@@ -1,0 +1,44 @@
+name: Materialize PikDro Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/materialize-pages.yml
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build static site files
+        shell: bash
+        run: |
+          cat .pages-src/index.xz.b64.part* | base64 -d | xz -d > index.html
+          cat > robots.txt <<'EOF'
+          User-agent: *
+          Allow: /
+
+          Sitemap: https://shogot62.github.io/pikdro-hud-demo-release/sitemap.xml
+          EOF
+          cat > sitemap.xml <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+            <url>
+              <loc>https://shogot62.github.io/pikdro-hud-demo-release/</loc>
+              <lastmod>2026-07-22</lastmod>
+            </url>
+          </urlset>
+          EOF
+          echo 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMzOGJkZjgiLz48cGF0aCBkPSJNMTggMTRoMjFjMTMgMCAyMCA4IDIwIDE4IDAgMTItOCAyMC0yMSAyMGgtOHYxMkgxOHptMTIgMTB2MThoOGM3IDAgMTAtMyAxMC05IDAtNi00LTktMTAtOXoiIGZpbGw9IiMwMzEwMTkiIHRyYW5zZm9ybT0ic2NhbGUoLjc4KSB0cmFuc2xhdGUoNyAyKSIvPjwvc3ZnPg==' | base64 -d > favicon.svg
+          echo 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjYzMCIgdmlld0JveD0iMCAwIDEyMDAgNjMwIiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idCBkIj48dGl0bGUgaWQ9InQiPlBpa0RybyBIVUQ8L3RpdGxlPjxkZXNjIGlkPSJkIj7phY3pgZTjgqrjg5XjgqHjg7zjga7ljZjkvqHjgpLoh6rli5XoqIjnrpfjgZnjgotBbmRyb2lk5ZCR44GR5Yik5pat5pSv5o+0SFVEPC9kZXNjPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiMwNzEwMWEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwMjA0MDciLz48L2xpbmVhckdyYWRpZW50PjxyYWRpYWxHcmFkaWVudCBpZD0iciI+PHN0b3Agc3RvcC1jb2xvcj0iIzM4YmRmOCIgc3RvcC1vcGFjaXR5PSIuMjgiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMzOGJkZjgiIHN0b3Atb3BhY2l0eT0iMCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjYzMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjkxMCIgY3k9IjE0MCIgcj0iMzkwIiBmaWxsPSJ1cmwoI3IpIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODYgODIpIj48cmVjdCB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSIyNCIgZmlsbD0iIzM4YmRmOCIvPjxwYXRoIGQ9Ik0yOCAyNGgzMmMyMSAwIDMxIDEyIDMxIDI5IDAgMTktMTMgMzEtMzQgMzFINDV2MjFIMjh6bTE3IDE1djMwaDEyYzExIDAgMTctNSAxNy0xNSAwLTEwLTYtMTUtMTctMTV6IiBmaWxsPSIjMDMxMDE5IiB0cmFuc2Zvcm09InNjYWxlKC43NSkgdHJhbnNsYXRlKDEwIDMpIi8+PC9nPjx0ZXh0IHg9IjIwNiIgeT0iMTQzIiBmaWxsPSIjZjhmYWZjIiBmb250LXNpemU9IjUyIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI4MDAiPlBpa0RybyBIVUQ8L3RleHQ+PHRleHQgeD0iODgiIHk9IjI5MCIgZmlsbD0iI2Y4ZmFmYyIgZm9udC1zaXplPSI2OCIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iODAwIj7jgqrjg5XjgqHjg7zliKTmlq3jgpLjgIHjgoLjgaPjgajou73jgY/jgII8L3RleHQ+PHRleHQgeD0iOTAiIHk9IjM2NSIgZmlsbD0iI2NiZDVlMSIgZm9udC1zaXplPSIzMiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIj7jgq3jg63ljZjkvqHjg7vliIbljZjkvqHjg7vmmYLntabmj5vnrpfjgpJIVUTooajnpLo8L3RleHQ+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTAgNDQwKSI+PHJlY3Qgd2lkdGg9IjY4MCIgaGVpZ2h0PSI4NiIgcng9IjIyIiBmaWxsPSIjMGIwZjE2IiBzdHJva2U9IiMzOGJkZjgiIHN0cm9rZS1vcGFjaXR5PSIuNDUiLz48dGV4dCB4PSIzNCIgeT0iNTUiIGZpbGw9IiM2N2U4ZjkiIGZvbnQtc2l6ZT0iMjkiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjcwMCI+QW5kcm9pZCAxMeS7pemZje+9nOeEoeaWmeODmeODvOOCv+eJiDwvdGV4dD48L2c+PC9zdmc+' | base64 -d > og-image.svg
+          rm -rf .pages-src
+          rm -f .github/workflows/materialize-pages.yml
+      - name: Commit deployed site
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy PikDro HUD landing page"
+          git push
