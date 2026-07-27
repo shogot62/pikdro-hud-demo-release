@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PikDro HUD｜配達オファーの単価を、ひと目で。</title>
+  <meta name="description" content="PikDro HUDは、Uber Driverのオファーからキロ単価・分単価・時給換算などを端末内で計算し、コンパクトなHUDで表示するAndroid向け判断補助ツールです。">
+  <meta name="theme-color" content="#05070a">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://shogot62.github.io/pikdro-hud-demo-release/">
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:site_name" content="PikDro HUD">
+  <meta property="og:title" content="PikDro HUD｜配達オファーの単価を、ひと目で。">
+  <meta property="og:description" content="キロ単価・分単価・時給換算を、配達アプリの上にコンパクト表示。Android向け無料ベータ版。">
+  <meta property="og:url" content="https://shogot62.github.io/pikdro-hud-demo-release/">
+  <meta property="og:image" content="https://shogot62.github.io/pikdro-hud-demo-release/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="PikDro HUDのロゴとキロ単価HUD">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="./assets/css/site.css?v=20260727-3">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "PikDro HUD",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Android 11 or later",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"},
+    "description": "Uber Driverのオファー判断を補助するAndroid向けHUD"
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+
+  <div class="motion-stage" aria-hidden="true">
+    <div class="sky-layer layer-far"></div>
+    <div class="horizon-glow"></div>
+    <div class="ridge ridge-far"></div>
+    <div class="ridge ridge-near"></div>
+    <div class="road-plane">
+      <div class="road-center"></div>
+      <div class="road-edge road-edge-left"></div>
+      <div class="road-edge road-edge-right"></div>
+    </div>
+    <div class="road-markers">
+      <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i>
+      <i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i>
+    </div>
+    <div class="speed-particles" id="speed-particles"></div>
+    <div class="fog-layer"></div>
+  </div>
+
+  <header class="site-header" id="site-header">
+    <a class="brand-link" href="#hero" aria-label="PikDro HUD トップへ">
+      <img src="./assets/app/icons/pikdro-hud-app-icon.png" alt="" width="40" height="40">
+      <span>PikDro HUD</span>
+    </a>
+    <nav class="global-nav" aria-label="メインナビゲーション">
+      <a href="#metrics">表示内容</a>
+      <a href="#setup">導入方法</a>
+      <a href="#privacy">データの扱い</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="header-cta" href="https://github.com/shogot62/pikdro-hud-demo-release/releases/latest/download/PikDro-HUD-demo.apk">APKを入手</a>
+  </header>
+
+  <main id="main-content">
+    <section class="scene-section hero-section" id="hero" data-scene="hero" aria-labelledby="hero-title">
+      <div class="scene-panel">
+        <div class="section-shell hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="signal-dot"></span>Android向け・現在無料ベータ版</p>
+            <h1 id="hero-title">配達オファーの単価を、<br><span>ひと目で。</span></h1>
+            <p class="lead">金額・距離・予定時間から、キロ単価、分単価、時給換算を端末内で計算。配達アプリの上に、判断に必要な数字だけを表示します。</p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="https://github.com/shogot62/pikdro-hud-demo-release/releases/latest/download/PikDro-HUD-demo.apk">
+                <span>APKを直接ダウンロード</span><small>Android 11以降</small>
+              </a>
+              <a class="button button-secondary" href="https://github.com/shogot62/pikdro-hud-demo-release">
+                GitHubで公開情報を確認
+              </a>
+            </div>
+            <p class="download-note">APKはアプリ本体、GitHubはリリースノート・過去版・公開文書・SHA-256確認用です。</p>
+          </div>
+          <div class="hero-visual visual-depth" data-parallax="0.9">
+            <div class="phone-frame" aria-label="PikDro HUDの表示例">
+              <div class="phone-status"><span>9:41</span><span>● ● ▰</span></div>
+              <div class="map-surface" aria-hidden="true">
+                <i class="map-road road-a"></i><i class="map-road road-b"></i><i class="map-road road-c"></i>
+                <span class="map-pin"></span>
+              </div>
+              <div class="hud hud-blue" role="img" aria-label="高評価のキロ単価HUD表示例">
+                <div class="hud-head">
+                  <span class="hud-brand">PikDro HUD</span>
+                  <span class="hud-tools" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                  </span>
+                </div>
+                <div class="hud-main-label">キロ単価：</div>
+                <div class="hud-main-value">¥283</div>
+                <div class="hud-divider"></div>
+                <div class="hud-subs">
+                  <div><span>分単価：</span><strong>¥38</strong></div>
+                  <div><span>時給換算：</span><strong>¥2,267</strong></div>
+                </div>
+                <div class="hud-divider"></div>
+                <div class="hud-footer"><span>ペース： <strong>3.3件/時</strong></span><span>消費燃料： <strong>0.03L</strong></span></div>
+              </div>
+              <div class="mini-icon">
+                <img src="./assets/app/icons/pikdro-hud-app-icon.png" alt="PikDro HUDミニアイコン">
+              </div>
+            </div>
+          </div>
+        </div>
+        <a class="scroll-cue" href="#decision"><span>仕組みを見る</span><i></i></a>
+      </div>
+    </section>
+
+    <section class="scene-section" id="decision" data-scene="decision" aria-labelledby="decision-title">
+      <div class="scene-panel">
+        <div class="section-shell split-layout">
+          <div>
+            <p class="eyebrow">単価計算をもっと手軽に</p>
+            <h2 id="decision-title">オファーの単価を、<br>すぐ<span>自動計算</span>。</h2>
+            <p class="lead">金額・距離・予定時間を読み取り、キロ単価・分単価・時給換算を端末内で計算。頭の中で割り算をする手間を減らします。</p>
+          </div>
+          <div class="decision-flow visual-depth" data-parallax="0.55">
+            <div class="flow-step"><span>金額</span><strong>¥680</strong></div>
+            <div class="flow-step"><span>距離</span><strong>2.4km</strong></div>
+            <div class="flow-step"><span>予定時間</span><strong>18分</strong></div>
+            <div class="flow-arrow" aria-hidden="true">→</div>
+            <div class="flow-result"><span>キロ単価</span><strong>¥283</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section" id="metrics" data-scene="metrics" aria-labelledby="metrics-title">
+      <div class="scene-panel">
+        <div class="section-shell">
+          <p class="eyebrow">HUDに表示する指標</p>
+          <h2 id="metrics-title">判断に必要な数字を、<span>ひとつのHUD</span>に。</h2>
+          <p class="lead compact">選択した指標を大きく、残りの指標とペース・消費量を同じHUD内に整理します。</p>
+          <div class="metric-cards">
+            <article class="metric-card"><span class="metric-symbol">km</span><h3>キロ単価</h3><p>報酬額 ÷ 配達距離。設定した評価基準に応じてHUDの枠色が変わります。</p></article>
+            <article class="metric-card"><span class="metric-symbol">min</span><h3>分単価・時給換算</h3><p>報酬額 ÷ 予定時間から、円/分と円/hを表示します。</p></article>
+            <article class="metric-card"><span class="metric-symbol">→</span><h3>ペース・消費量</h3><p>件数と時間から件/時を計算。車・バイクでは燃費設定から消費燃料を表示します。</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section" id="evaluation" data-scene="evaluation" aria-labelledby="evaluation-title">
+      <div class="scene-panel">
+        <div class="section-shell">
+          <p class="eyebrow">評価色と音声</p>
+          <h2 id="evaluation-title"><span>色と読み上げ</span>で、確認をすばやく。</h2>
+          <p class="lead compact">評価対象と基準値は設定できます。色だけに頼らず、指標名と数値を必ず併記します。</p>
+          <div class="evaluation-layout">
+            <div class="hud-legend">
+              <div><i class="swatch swatch-red"></i><strong>低評価</strong><span>赤</span></div>
+              <div><i class="swatch swatch-yellow"></i><strong>低め</strong><span>黄系</span></div>
+              <div><i class="swatch swatch-white"></i><strong>標準</strong><span>白</span></div>
+              <div><i class="swatch swatch-green"></i><strong>高め</strong><span>緑系</span></div>
+              <div><i class="swatch swatch-blue"></i><strong>高評価</strong><span>青</span></div>
+            </div>
+            <div class="voice-card">
+              <span class="voice-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+              <div><h3>音声読み上げ</h3><p>ON/OFF、テンプレート、テスト再生を設定できます。走行中の画面注視や操作を促す機能ではありません。</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section" id="images" data-scene="images" aria-labelledby="images-title">
+      <div class="scene-panel">
+        <div class="section-shell split-layout image-feature-layout">
+          <div>
+            <p class="eyebrow">確認用画像</p>
+            <h2 id="images-title">保存して、並べて、<br><span>あとから</span>確かめる。</h2>
+            <p class="lead">保存をONにすると、HUD表示の読み取りに使用した確認用画像を最大200枚まで残せます。</p>
+            <ul class="feature-list">
+              <li><strong>画像一覧</strong><span>オファー画像と結合済み画像を絞り込み</span></li>
+              <li><strong>縦結合</strong><span>選んだ画像を縦に連結</span></li>
+              <li><strong>単価結合</strong><span>確認用画像にHUDの単価情報を付けて、1枚の画像として保存</span></li>
+            </ul>
+          </div>
+          <div class="gallery-phone visual-depth" data-parallax="0.7" role="img" aria-label="画像一覧と縦結合の画面例">
+            <div class="gallery-head"><span>保存画像</span><button type="button" tabindex="-1">選択</button></div>
+            <div class="gallery-filters"><span class="selected">オファー</span><span>結合済み</span></div>
+            <div class="gallery-grid">
+              <div class="offer-thumb"><b>¥680</b><span>18分　2.4km</span></div>
+              <div class="offer-thumb"><b>¥520</b><span>16分　3.1km</span></div>
+              <div class="offer-thumb combined"><b>単価結合</b><span>PikDro HUD</span></div>
+              <div class="offer-thumb receipt"><b>縦結合</b><span>2枚</span></div>
+            </div>
+            <div class="gallery-actions"><span>削除</span><span>トリミング</span><span>縦結合</span><span>単価結合</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section" id="setup" data-scene="setup" aria-labelledby="setup-title">
+      <div class="scene-panel">
+        <div class="section-shell">
+          <p class="eyebrow">導入方法</p>
+          <h2 id="setup-title"><span>3つの準備</span>で、使い始める。</h2>
+          <div class="setup-steps">
+            <article><span>1</span><h3>APKをインストール</h3><p>最新APKを入手し、Android標準インストーラーの案内に従います。</p></article>
+            <article><span>2</span><h3>必要な権限を設定</h3><p>アクセシビリティと「他のアプリの上に表示」を有効にします。</p></article>
+            <article><span>3</span><h3>HUD有効化をON</h3><p>PikDro HUDへ戻り、HUD有効化をONにしてUber Driverを開きます。</p></article>
+          </div>
+          <p class="permission-note">通常利用に必要なのは、アクセシビリティと「他のアプリの上に表示」の設定です。位置情報、通知アクセス、カメラ、マイク、連絡先の権限は必要ありません。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section" id="control" data-scene="control" aria-labelledby="control-title">
+      <div class="scene-panel">
+        <div class="section-shell split-layout control-layout">
+          <div class="mini-demo visual-depth" data-parallax="0.55">
+            <div class="mini-orbit"></div>
+            <div class="mini-icon mini-icon-large"><img src="./assets/app/icons/pikdro-hud-app-icon.png" alt="PikDro HUDミニアイコン"></div>
+            <span class="gesture gesture-tap">短くタップ<br><b>手動確認</b></span>
+            <span class="gesture gesture-drag">ドラッグ<br><b>位置を移動</b></span>
+            <span class="gesture gesture-hold">長押し<br><b>設定を開く</b></span>
+          </div>
+          <div>
+            <p class="eyebrow">ミニアイコンと設定</p>
+            <h2 id="control-title"><span>必要な時だけ</span>手元で。</h2>
+            <p class="lead">HUDを有効にすると表示されるミニアイコンから、現在のオファーを手動で確認できます。配達アプリのボタンは操作しません。</p>
+            <div class="setting-chips" aria-label="主な設定項目">
+              <span>HUD表示時間</span><span>車両</span><span>燃費・体重</span><span>評価基準</span><span>テーマ</span><span>音声読み上げ</span><span>HUDプレビュー</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section" id="privacy" data-scene="privacy" aria-labelledby="privacy-title">
+      <div class="scene-panel">
+        <div class="section-shell">
+          <p class="eyebrow">データ・ログ・画像の扱い</p>
+          <h2 id="privacy-title">通常処理は<span>端末内</span>。送信は利用者が選んだときだけ。</h2>
+          <p class="lead compact">どの情報が端末内に残り、どの操作で外部通信が起きるかを分けて説明します。</p>
+          <div class="detail-switcher" data-tabs>
+            <div class="tab-buttons" role="tablist" aria-label="データの扱い">
+              <button role="tab" id="privacy-tab-local" aria-selected="true" aria-controls="privacy-panel-local" tabindex="0">通常処理</button>
+              <button role="tab" id="privacy-tab-image" aria-selected="false" aria-controls="privacy-panel-image" tabindex="-1">確認用画像</button>
+              <button role="tab" id="privacy-tab-diagnostic" aria-selected="false" aria-controls="privacy-panel-diagnostic" tabindex="-1">診断送信</button>
+              <button role="tab" id="privacy-tab-update" aria-selected="false" aria-controls="privacy-panel-update" tabindex="-1">更新確認</button>
+            </div>
+            <div class="tab-panels">
+              <section role="tabpanel" id="privacy-panel-local" aria-labelledby="privacy-tab-local" tabindex="0">
+                <span class="detail-kicker">端末内</span><h3>画面判定・文字読み取り・計算は端末内</h3>
+                <p>オファー候補のときだけ画面を取得し、必要な範囲に絞って文字を読み取ります。通常処理で生の画面全体を外部へ送りません。</p>
+              </section>
+              <section role="tabpanel" id="privacy-panel-image" aria-labelledby="privacy-tab-image" tabindex="0" hidden>
+                <span class="detail-kicker">確認用画像</span><h3>保存は初期状態でOFF</h3>
+                <p>保存をONにした場合だけ、金額、予定時間、距離が表示された範囲に絞って画像を保存します。利用者が確認・削除でき、診断データには含めません。</p>
+              </section>
+              <section role="tabpanel" id="privacy-panel-diagnostic" aria-labelledby="privacy-tab-diagnostic" tabindex="0" hidden>
+                <span class="detail-kicker">明示操作</span><h3>診断は「送信する」を押した場合だけ</h3>
+                <p>「送信する」を押すと、診断に必要な範囲へ限定した情報が送信されます。端末の状態に応じて、診断ログ、診断用画像、入力したコメントが含まれます。住所、店舗名、顧客情報などは入力しないでください。</p>
+              </section>
+              <section role="tabpanel" id="privacy-panel-update" aria-labelledby="privacy-tab-update" tabindex="0" hidden>
+                <span class="detail-kicker">アプリの更新</span><h3>ダウンロードは同意後、ファイルを確認してから案内</h3>
+                <p>アプリは更新情報を確認します。APKは利用者が選んだ後に取得し、公開された正規のファイルと一致することを確認してから、Android標準インストーラーを開きます。強制的に更新したり、利用者の操作なしにインストールしたりすることはありません。</p>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section" id="terms" data-scene="terms" aria-labelledby="terms-title">
+      <div class="scene-panel">
+        <div class="section-shell">
+          <p class="eyebrow">注意事項・利用条件</p>
+          <h2 id="terms-title">安全と、<span>ご自身の判断</span>を最優先に。</h2>
+          <div class="terms-grid">
+            <article><span class="term-icon">!</span><h3>走行中は操作しない</h3><p>画面を注視せず、道路状況、交通ルール、周囲の安全を最優先してください。</p></article>
+            <article><span class="term-icon">○</span><h3>判断補助ツール</h3><p>読み取りや計算結果の完全性は保証しません。オファーの判断と操作は利用者自身が行います。</p></article>
+            <article><span class="term-icon">×</span><h3>自動操作なし</h3><p>自動受諾・拒否、配達アプリのボタンの自動タップは行いません。</p></article>
+          </div>
+          <p class="affiliation">PikDro HUDはUber公式アプリではありません。Uber Technologies, Inc.および関連会社との提携、承認、後援、認定関係はありません。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section" id="troubleshooting" data-scene="troubleshooting" aria-labelledby="trouble-title">
+      <div class="scene-panel">
+        <div class="section-shell">
+          <p class="eyebrow">トラブル対応</p>
+          <h2 id="trouble-title">困ったときは、<span>症状から</span>確認。</h2>
+          <div class="detail-switcher" data-tabs>
+            <div class="tab-buttons" role="tablist" aria-label="トラブルの症状">
+              <button role="tab" id="trouble-tab-start" aria-selected="true" aria-controls="trouble-panel-start" tabindex="0">ONにできない</button>
+              <button role="tab" id="trouble-tab-hud" aria-selected="false" aria-controls="trouble-panel-hud" tabindex="-1">HUDが出ない</button>
+              <button role="tab" id="trouble-tab-number" aria-selected="false" aria-controls="trouble-panel-number" tabindex="-1">数値がおかしい</button>
+              <button role="tab" id="trouble-tab-upload" aria-selected="false" aria-controls="trouble-panel-upload" tabindex="-1">診断送信できない</button>
+            </div>
+            <div class="tab-panels">
+              <section role="tabpanel" id="trouble-panel-start" aria-labelledby="trouble-tab-start" tabindex="0"><h3>2つの権限を確認</h3><p>アクセシビリティサービスと「他のアプリの上に表示」を有効にし、設定直後に反映されない場合はアプリを開き直します。</p></section>
+              <section role="tabpanel" id="trouble-panel-hud" aria-labelledby="trouble-tab-hud" tabindex="0" hidden><h3>実際のオファー画面で手動確認</h3><p>HUD有効化の設定を確認し、実際のオファー画面でミニアイコンを短くタップします。オファーでない画面や、値を確定できない画面ではHUDを表示しない場合があります。</p></section>
+              <section role="tabpanel" id="trouble-panel-number" aria-labelledby="trouble-tab-number" tabindex="0" hidden><h3>画面上の3項目を確認</h3><p>Uber Driver側で金額、距離、予定時間が見えているか確認します。誤認識が疑われる場合は、HUDの値だけで判断しないでください。</p></section>
+              <section role="tabpanel" id="trouble-panel-upload" aria-labelledby="trouble-tab-upload" tabindex="0" hidden><h3>対応バージョンと接続を確認</h3><p>診断送信に対応したバージョンであることと、インターネット接続を確認してください。コメントには、住所、店舗名、顧客情報などの個人情報を入力しないでください。</p></section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section" id="faq" data-scene="faq" aria-labelledby="faq-title">
+      <div class="scene-panel">
+        <div class="section-shell">
+          <p class="eyebrow">よくある質問</p>
+          <h2 id="faq-title"><span>導入前</span>に知っておきたいこと。</h2>
+          <div class="faq-grid">
+            <article><h3>iPhoneで使えますか？</h3><p>使えません。PikDro HUDはAndroid専用アプリです。</p></article>
+            <article><h3>料金はかかりますか？</h3><p>現在は無料ベータ版です。仕様、配布方法、提供期間は今後変更される場合があります。</p></article>
+            <article><h3>対応する配達アプリは？</h3><p>現在対応している配達アプリはUber Driverのみです。ほかの配達アプリには対応していません。</p></article>
+            <article><h3>オファーを自動で受諾・拒否できますか？</h3><p>できません。PikDro HUDは、自動受諾・自動拒否・配達アプリのボタン操作を行いません。オファーの判断と操作は利用者自身が行います。</p></article>
+            <article><h3>対応するAndroidは？</h3><p>Android 11以降が対象です。Pixel 7aで動作を確認していますが、すべてのAndroid端末での動作を保証するものではありません。</p></article>
+            <article><h3>画像やログは送信されますか？</h3><p>通常処理は端末内です。診断データは、利用者が明示的に送信操作をした場合に限って送信されます。</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section final-section" id="download" data-scene="download" aria-labelledby="download-title">
+      <div class="scene-panel">
+        <div class="section-shell final-cta">
+          <img src="./assets/app/icons/pikdro-hud-app-icon.png" alt="" width="96" height="96">
+          <p class="eyebrow">PikDro HUD</p>
+          <h2 id="download-title"><span>色と数字</span>で、<br>単価をすばやく確認。</h2>
+          <p class="lead compact">キロ単価・分単価・時給換算を、見やすいHUDにまとめて表示します。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/shogot62/pikdro-hud-demo-release/releases/latest/download/PikDro-HUD-demo.apk"><span>APKを直接ダウンロード</span><small>Android 11以降・現在無料ベータ版</small></a>
+            <a class="button button-secondary" href="https://github.com/shogot62/pikdro-hud-demo-release">GitHubで詳細を確認</a>
+          </div>
+          <p class="safety-line">操作・確認は停車中または安全な場所で行ってください。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <a class="brand-link" href="#hero"><img src="./assets/app/icons/pikdro-hud-app-icon.png" alt="" width="32" height="32"><span>PikDro HUD</span></a>
+      <p>配達オファーの単価を端末内で計算する、Android向け判断補助HUD。</p>
+    </div>
+    <nav aria-label="フッターナビゲーション">
+      <a href="#privacy">データの扱い</a><a href="#terms">利用条件</a><a href="#troubleshooting">困ったとき</a><a href="#faq">FAQ</a>
+    </nav>
+    <p class="footer-note">非公式・非提携の判断補助ツールです。PikDro HUDは配達アプリを自動操作しません。</p>
+  </footer>
+
+  <script src="./assets/js/site.js?v=20260727-3" defer></script>
+</body>
+</html>
