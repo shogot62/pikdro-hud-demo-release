@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shogot62.github.io/pikdro-hud-demo-release/sitemap.xml
