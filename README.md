@@ -1,6 +1,6 @@
 # PikDro HUD Demo
 
-対象バージョン: `0.1.0-demo-310`（versionCode `310`）
+対象バージョン: `0.1.0-demo-318`（versionCode `318`）
 
 PikDro HUD Demoは、Uber Driverのオファー画面に表示された金額・距離・予定時間をもとに、距離単価や時間単価などの判断補助情報をHUD表示するAndroid向けデモアプリです。
 
@@ -8,7 +8,7 @@ PikDro HUD Demoは、Uber Driverのオファー画面に表示された金額・
 
 ## ダウンロード
 
-最新版はGitHub Releasesから取得してください。
+最新版は公式案内ページ `https://shogot62.github.io/pikdro-hud-demo-release/` から取得してください。
 
 1. Releasesで最新の通常リリースを開きます。
 2. `PikDro-HUD-demo.apk` をダウンロードします。最新版の固定URLは `https://github.com/shogot62/pikdro-hud-demo-release/releases/latest/download/PikDro-HUD-demo.apk` です。
@@ -30,7 +30,7 @@ Demo版はGitHub Releasesの `update.json` を確認し、端末上のversionCod
 
 設定画面の末尾にある「PikDro HUDを共有」を開くと、この公開配布ページのQRコードを表示できます。通常は折りたたまれており、配達前の設定操作を妨げません。
 
-同じ画面からGitHubページを開くか、Androidの共有シートへ公開URLを渡すこともできます。共有内容にアプリ設定、診断ログ、保存画像は含まれません。
+同じ画面から公式案内ページを開くか、Androidの共有シートへ `https://shogot62.github.io/pikdro-hud-demo-release/` を渡すこともできます。共有内容にアプリ設定、診断ログ、保存画像は含まれません。
 
 ## 公開範囲
 

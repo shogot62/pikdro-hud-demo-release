@@ -1,7 +1,7 @@
 # PikDro HUD Demo の使い方
 
-最終更新日: 2026年7月22日  
-対象バージョン: `0.1.0-demo-310`（versionCode `310`）
+最終更新日: 2026年7月27日  
+対象バージョン: `0.1.0-demo-318`（versionCode `318`）
 
 ## 動作対象
 
@@ -13,7 +13,7 @@
 
 ## インストール
 
-1. Demo配布リポジトリのGitHub Releasesを開きます。
+1. 公式案内ページ `https://shogot62.github.io/pikdro-hud-demo-release/` を開きます。
 2. 最新の通常リリースから `PikDro-HUD-demo.apk` をダウンロードします。固定URLは `https://github.com/shogot62/pikdro-hud-demo-release/releases/latest/download/PikDro-HUD-demo.apk` です。
 3. 必要に応じて `SHA256SUMS.txt` とAPKのSHA-256を照合します。
 4. APKを開き、Android標準インストーラーの案内に従います。
