@@ -1,7 +1,7 @@
 # PikDro HUD Demo の使い方
 
 最終更新日: 2026年7月27日  
-対象バージョン: `0.1.0-demo-318`（versionCode `318`）
+対象バージョン: `0.1.0-demo-319`（versionCode `319`）
 
 ## 動作対象
 
